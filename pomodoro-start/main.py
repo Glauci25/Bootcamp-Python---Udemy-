@@ -4,36 +4,46 @@ import math
 PINK = "#e2979c"
 RED = "#e7305b"
 GREEN = "#9bdeac"
-YELLOW = "#f7f5dd"
+YELLOW = "#fffbc1"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+WORK_MIN = 1
+SHORT_BREAK_MIN = 1
+LONG_BREAK_MIN = 1
 repeticoes = 0
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 def start():
-    global repeticoes
+    global repeticoes #variável global --> contagens das repetições
+    repeticoes += 1
 
-    while repeticoes < 4:
-        count_down(WORK_MIN*60)
+    if repeticoes % 8 == 0:
+        count_down(LONG_BREAK_MIN*60)
+        main_label.config(text="Pausa Longa", font=(FONT_NAME, 40, "bold"),fg=RED)
+    elif repeticoes % 2 == 0:
         count_down(SHORT_BREAK_MIN*60)
-        repeticoes += 1
+        main_label.config(text="Pausa Curta", font=(FONT_NAME, 40, "bold"),fg=PINK)
+    else:
+        count_down(WORK_MIN*60)
+        main_label.config(text="Trabalho", font=(FONT_NAME, 40, "bold"),fg=GREEN)
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
-def count_down(count):
+def count_down(count): #função que gerencia as contagens
 
-    count_min = count // 60
-    count_sec = count % 60
+    count_min = count // 60 #os minutos (lado esquerdo), divisão inteira
+    count_sec = count % 60 #segundos (lado direito)
 
-    if count_sec < 10:
+    if count_sec < 10: #formata o tempo "00:00"
         count_sec = f"0{count_sec}"
     if count_min < 10:
         count_min = f"0{count_min}"
 
     canvas.itemconfig(timer_text,text=f"{count_min}:{count_sec}")
-    window.after(1000, count_down, count-1)
+    window.after(1000, count_down, count-1) #depois de 1 segundo --> executa count_down --> diminui um minuto no tempo
 
+    if count > 0:
+        window.after(1000, count_down, count-1)
+    else:
+        start()
 # ---------------------------- UI SETUP ------------------------------- #
 
 window = tkinter.Tk()
